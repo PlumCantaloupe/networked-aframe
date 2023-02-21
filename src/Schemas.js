@@ -11,8 +11,14 @@ class Schemas {
     return {
       template: name,
       components: [
-        'position',
-        'rotation',
+        {
+          component: 'position',
+          requiresNetworkUpdate: NAF.utils.vectorRequiresUpdate(0.001)
+        },
+        {
+          component: 'rotation',
+          requiresNetworkUpdate: NAF.utils.vectorRequiresUpdate(0.5)
+        }
       ]
     }
   }
@@ -31,7 +37,7 @@ class Schemas {
       this.templateCache[schema.template] = document.importNode(templateEl.content, true);
     } else {
       NAF.log.error('Schema not valid: ', schema);
-      NAF.log.error('See https://github.com/haydenjameslee/networked-aframe#syncing-custom-components');
+      NAF.log.error('See https://github.com/networked-aframe/networked-aframe#syncing-custom-components');
     }
   }
 

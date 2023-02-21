@@ -1,4 +1,4 @@
-/* global NAF */
+/* global NAF, THREE */
 
 module.exports.whenEntityLoaded = function(entity, callback) {
   if (entity.hasLoaded) { callback(); }
@@ -100,9 +100,33 @@ module.exports.isMine = function(entity) {
     throw new Error("Entity does not have and is not a child of an entity with the [networked] component ");
   }
 
+  // When remote networked entities are initially created, there's a frame delay before they are completely instantiated.
+  // On that frame, data is undefined so we can't check the owner. In this instance we assume that the user is not the owner of the entity.
+  if (!curEntity.components.networked.data) {
+    return false;
+  }
+
   return curEntity.components.networked.data.owner === NAF.clientId;
 };
 
 module.exports.almostEqualVec3 = function(u, v, epsilon) {
   return Math.abs(u.x-v.x)<epsilon && Math.abs(u.y-v.y)<epsilon && Math.abs(u.z-v.z)<epsilon;
+};
+
+module.exports.vectorRequiresUpdate = epsilon => {
+  return () => {
+    let prev = null;
+
+    return curr => {
+      if (prev === null) {
+        prev = new THREE.Vector3(curr.x, curr.y, curr.z);
+        return true;
+      } else if (!NAF.utils.almostEqualVec3(prev, curr, epsilon)) {
+        prev.copy(curr);
+        return true;
+      }
+
+      return false;
+    };
+  };
 };

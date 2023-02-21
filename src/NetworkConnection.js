@@ -28,7 +28,7 @@ class NetworkConnection {
         = this.entities.removeRemoteEntity.bind(this.entities);
   }
 
-  connect(serverUrl, appName, roomName, enableAudio = false) {
+  connect(serverUrl, appName, roomName, enableAudio = false, enableVideo = false) {
     NAF.app = appName;
     NAF.room = roomName;
 
@@ -38,7 +38,7 @@ class NetworkConnection {
 
     var webrtcOptions = {
       audio: enableAudio,
-      video: false,
+      video: enableVideo,
       datachannel: true
     };
     this.adapter.setWebRtcOptions(webrtcOptions);
@@ -90,7 +90,7 @@ class NetworkConnection {
     for (var id in oldOccupantList) {
       var clientFound = newOccupantList[id];
       if (!clientFound) {
-        NAF.log.write('Closing stream to ', id);
+        NAF.log.write('Closing stream to', id);
         this.adapter.closeStreamConnection(id);
       }
     }
@@ -101,7 +101,7 @@ class NetworkConnection {
     for (var id in occupantList) {
       var startConnection = this.isNewClient(id) && this.adapter.shouldStartConnectionTo(occupantList[id]);
       if (startConnection) {
-        NAF.log.write('Opening datachannel to ', id);
+        NAF.log.write('Opening datachannel to', id);
         this.adapter.startStreamConnection(id);
       }
     }
@@ -146,7 +146,7 @@ class NetworkConnection {
   }
 
   hasActiveDataChannel(clientId) {
-    return !!(this.activeDataChannels[clientId] && this.activeDataChannels[clientId]);
+    return !!this.activeDataChannels[clientId];
   }
 
   broadcastData(dataType, data) {
@@ -208,7 +208,10 @@ class NetworkConnection {
 
   disconnect() {
     this.entities.removeRemoteEntities();
-    this.adapter.disconnect();
+
+    if (this.adapter) {
+      this.adapter.disconnect();
+    }
 
     NAF.app = '';
     NAF.room = '';

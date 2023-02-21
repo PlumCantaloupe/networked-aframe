@@ -1,3 +1,4 @@
+/* global AFRAME, THREE */
 AFRAME.registerComponent('gun', {
   schema: {
     bulletTemplate: {default: '#bullet-template'},
@@ -27,8 +28,7 @@ AFRAME.registerComponent('gun', {
     el.setAttribute('position', this.getInitialBulletPosition(tip));
     el.setAttribute('rotation', this.getInitialBulletRotation(tip));
 
-    var scene = document.querySelector('a-scene');
-    scene.appendChild(el);
+    this.el.sceneEl.appendChild(el);
   },
 
   getInitialBulletPosition: function(spawnerEl) {
@@ -48,6 +48,6 @@ AFRAME.registerComponent('gun', {
   },
 
   vec3RadToDeg: function(rad) {
-    rad.set(rad.y * 90, -90 + (-THREE.Math.radToDeg(Math.atan2(rad.z, rad.x))), 0);
+    rad.set(rad.y * 90, -90 + (-THREE.MathUtils.radToDeg(Math.atan2(rad.z, rad.x))), 0);
   }
 });
