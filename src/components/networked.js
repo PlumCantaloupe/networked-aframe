@@ -382,21 +382,6 @@ AFRAME.registerComponent('networked', {
 
   gatherComponentsData: function(fullSync) {
     var componentsData = null;
-    var euler_w = null;
-    var pos_w = null;
-    var quat_w = null;
-    var scale_w = null;
-
-    if (this.data.synchWorldTransforms === true) {
-      euler_w = new THREE.Euler();
-      pos_w = new THREE.Vector3();
-      quat_w = new THREE.Quaternion();
-      scale_w = new THREE.Vector3();
-
-      //doing this here once so we don't have to do it multiple times later
-      this.el.object3D.updateMatrixWorld( true );
-      this.el.object3D.matrixWorld.decompose( pos_w, quat_w, scale_w );
-    }
 
     for (var i = 0; i < this.componentSchemas.length; i++) {
       var componentSchema = this.componentSchemas[i];
@@ -417,14 +402,20 @@ AFRAME.registerComponent('networked', {
       //not that calling each "world" transform individually is not optimized; but slotting this code in one place seems worth it
       if (this.data.synchWorldTransforms === true) {
         if (componentName === 'position') {
-          componentData = pos_w.clone();
+          let worldPos = new THREE.Vector3();
+          worldPos = this.el.object3D.getWorldPosition(worldPos);
+          componentData = {x:worldPos.x, y:worldPos.y, z:worldPos.z};
         }
         else if (componentName === 'rotation') {
-          euler_w.setFromQuaternion(quat_w, this.conversionEuler.order);
-          componentData = {x:DEG2RAD * euler_w.x, y:DEG2RAD * euler_w.y, z:DEG2RAD * euler_w.z}; 
+          let worldQuat = new THREE.Quaternion();
+          worldQuat = this.el.object3D.getWorldQuaternion(worldQuat);
+          let worldRot = new THREE.Euler().setFromQuaternion( worldQuat, this.conversionEuler.order );
+          componentData = {x:THREE.MathUtils.radToDeg(worldRot.x), y:THREE.MathUtils.radToDeg(worldRot.y), z:THREE.MathUtils.radToDeg(worldRot.z)}; 
         }
         else if (componentName === 'scale') {
-          componentData = scale_w.clone();
+          let worldScale = new THREE.Vector3();
+          worldScale = this.el.object3D.getWorldScale(worldScale);
+          componentData = {x:worldScale.x, y:worldScale.y, z:worldScale.z};
         }
       }
 
