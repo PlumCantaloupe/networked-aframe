@@ -55,8 +55,6 @@ class NetworkEntities {
       synchWorldTransforms: entityData.synchWorldTransforms
     };
 
-    console.log('entityData.synchWorldTransforms', entityData.synchWorldTransforms);
-
     entity.setAttribute('networked', networkData);
     entity.firstUpdateData = entityData;
   }
