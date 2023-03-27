@@ -448,6 +448,7 @@ AFRAME.registerComponent('networked', {
     syncData.lastOwnerTime = this.lastOwnerTime;
     syncData.template = data.template;
     syncData.persistent = data.persistent;
+    syncData.synchWorldTransforms = data.synchWorldTransforms;
     syncData.parent = this.getParentId();
     syncData.components = components;
     syncData.isFirstSync = !!isFirstSync;

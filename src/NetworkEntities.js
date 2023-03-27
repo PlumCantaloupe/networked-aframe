@@ -51,8 +51,11 @@ class NetworkEntities {
       creator: entityData.creator,
       owner: entityData.owner,
       networkId: entityData.networkId,
-      persistent: entityData.persistent
+      persistent: entityData.persistent,
+      synchWorldTransforms: entityData.synchWorldTransforms
     };
+
+    console.log('entityData.synchWorldTransforms', entityData.synchWorldTransforms);
 
     entity.setAttribute('networked', networkData);
     entity.firstUpdateData = entityData;
