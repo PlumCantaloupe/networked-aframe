@@ -19,6 +19,28 @@
 
     <!-- for random avatar color -->
     <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
+
+    <script>
+      //want the object and person to be the same color so that it is clear who can interact with what
+      AFRAME.registerComponent('random-same-color', {
+        init: function () {
+          //player_head
+          //pickup-object
+
+          const randCol =
+            'rgb(' +
+            Math.floor(Math.random() * 256) +
+            ',' +
+            Math.floor(Math.random() * 256) +
+            ',' +
+            Math.floor(Math.random() * 256) +
+            ')';
+
+          document.querySelector('#player_head').setAttribute('color', randCol);
+          document.querySelector('#pickup-object').setAttribute('material', { color: randCol });
+        }
+      });
+    </script>
   </head>
   <body>
     <a-scene
@@ -27,6 +49,7 @@
       debug: true;
       adapter: wseasyrtc;
     "
+      random-same-color
     >
       <a-assets>
         <img
@@ -61,6 +84,7 @@
         <!-- /Templates -->
       </a-assets>
 
+      <!-- avatar -->
       <a-entity
         id="player"
         networked="template:#avatar-template; attachTemplateToLocal:false;"
@@ -77,10 +101,12 @@
           raycaster="far:20; interval:300; objects:.interactive;"
         >
         </a-entity>
-        <a-sphere class="head" visible="false" random-color></a-sphere>
+        <a-sphere id="player_head" class="head" visible="false"></a-sphere>
       </a-entity>
 
+      <!-- object to pickup -->
       <a-entity
+        id="pickup-object"
         class="interactive"
         networked="template:#interactive-geo-template; attachTemplateToLocal:true; synchWorldTransforms:true;"
         pickupable
@@ -89,6 +115,14 @@
         animation="property:rotation.y; to:360; dur:15000; easing:linear; loop:true"
       >
       </a-entity>
+
+      <!-- text insructions -->
+      <a-entity
+        position="0 0.8 0"
+        geometry="primitive:plane; width:8; height:0.4"
+        material="color:blue;"
+        text="value:Click on object to pick up. Click again to release.;"
+      ></a-entity>
 
       <a-entity
         position="0 0 0"
