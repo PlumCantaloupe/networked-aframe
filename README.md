@@ -72,10 +72,10 @@ Basic Example
 <html>
   <head>
     <title>My Networked-Aframe Scene</title>
-    <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.5.0/socket.io.slim.js"></script>
     <script src="/easyrtc/easyrtc.js"></script>
-    <script src="https://unpkg.com/networked-aframe@^0.11.0/dist/networked-aframe.min.js"></script>
+    <script src="https://unpkg.com/networked-aframe@^0.12.0/dist/networked-aframe.min.js"></script>
   </head>
   <body>
     <a-scene networked-scene>
@@ -96,7 +96,6 @@ More Examples
 
 Open in two tabs if nobody else is online, or [remix the code examples yourself](https://glitch.com/edit/#!/remix/naf-examples).
 
-**Updated:**
 * [Basic](https://naf-examples.glitch.me/basic.html)
 * [Basic with 4 clients](https://naf-examples.glitch.me/basic-4.html)
 * [Positional Audio](https://naf-examples.glitch.me/basic-audio.html)
@@ -105,6 +104,9 @@ Open in two tabs if nobody else is online, or [remix the code examples yourself]
 * [Tracked Controllers](https://naf-examples.glitch.me/tracked-controllers.html)
 * [More...](https://naf-examples.glitch.me)
 
+More complete examples:
+* [Nametags with UI in SolidJS/Tailwind CSS](https://naf-nametag-solidjs.glitch.me/) ([GitHub](https://github.com/networked-aframe/naf-nametag-solidjs))
+* [Realistic animated avatars with UI to choose your avatar](https://naf-valid-avatars.glitch.me/) ([GitHub](https://github.com/networked-aframe/naf-valid-avatars))
 
 **Not updated to latest version:**
 * [Dynamic Room Name](https://glitch.com/edit/#!/naf-dynamic-room)
@@ -352,14 +354,14 @@ To sync nested templates setup your HTML nodes like so:
 </a-entity>
 ```
 
-In this example the head/camera, left and right hands will spawn their own templates which will be networked independently of the root player. Note: this parent-child relationship only works between one level, ie. a child entity's direct parent must have the `networked` component.
+In this example the head/camera, left and right hands of controllers will spawn their own templates which will be networked independently of the root player. Note: this is not related to hand tracking which is currently not supported. This parent-child relationship only works between one level, ie. a child entity's direct parent must have the `networked` component.
 
 You need to define your left and right hand templates yourself to show hand models for the other users. Only the position and rotation will be synced to the other users. To sync the hand gesture, see the `networked-hand-controls` component below.
 
 ### Tracked Controllers w/ Synced Gestures
 
 This is a much simpler alternative to the above.
-NAF allows easily adding hand models visible to the others that show gestures matching to which buttons are touched--so you can point and give a thumbs up or make a fist to other people in the room.
+NAF allows easily adding hand models visible to the others that show emulated gestures (not hand tracking) matching to which buttons are touched--so you can point and give a thumbs up or make a fist to other people in the room.
 
 All you have to do is use the built in `networked-hand-controls` component, by adding these two entities as children of your camera rig:
 
@@ -616,6 +618,13 @@ NAF.options.useLerp
 ```
 
 By default when an entity is created the [`buffered-interpolation`](https://github.com/InfiniteLee/buffered-interpolation) library is used to smooth out position, rotation and scale network updates. Set this to false if you don't want this feature to be used on creation.
+
+Offline usage
+-------------
+
+NAF already includes easyrtc thus running `npm run dev` will provide a fully working solution without accessing an external server. The examples though do rely on both AFrame and other dependencies that not packaged with NAF. Consequently one would have to first [adapt AFrame to work offline](https://aframe.io/docs/1.4.0/introduction/faq.html#can-i-use-a-frame-offline-or-self-hosted) then do the same for all additional components. This basically boils down to downloading the scripts used and their content, e.g assets like 3D models, fonts, etc. It is recommended to load the page while the network console open and identify what requests go outside of the host.
+
+For VR you will also need https as browsers require it for immersive mode. Instructions are provided in the `server/easyrtc-server.js` file. Namely you will have to generate a key and certificate, add them to your local CA then load them via the express server provided by NAF. Make sure to configure that properly at the top of `server/easyrtc-server.js` and enable https itself further down via `https.createServer` as instructed. Once you connect to the NAF server in VR the browser will still complain that the certificate is unknown. You can click on advanced and proceed.
 
 Stay in Touch
 -------------
