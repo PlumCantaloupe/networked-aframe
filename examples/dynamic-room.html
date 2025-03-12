@@ -40,17 +40,11 @@
     <script src="https://cdn.jsdelivr.net/npm/aframe-randomizer-components@3.0.2/dist/aframe-randomizer-components.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.5.0/dist/aframe-environment-component.min.js"></script>
     <script src="/js/spawn-in-circle.component.js"></script>
+    <script src="/js/dynamic-room.component.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
   </head>
   <body>
-    <a-scene
-      networked-scene="
-      room: basic-audio;
-      debug: true;
-      adapter: easyrtc;
-      audio: true;
-    "
-    >
+    <a-scene dynamic-room>
       <a-assets>
         <!-- Templates -->
 
@@ -98,6 +92,11 @@
       let micEnabled = true;
       // Mic button element
       const micBtnEle = document.getElementById('mic-btn');
+      const params = new URLSearchParams(location.search);
+      const audio = params.get('audio');
+      if (audio !== 'true') {
+        micBtnEle.style.display = 'none';
+      }
 
       // Called by Networked-Aframe when connected to server
       function onConnect() {

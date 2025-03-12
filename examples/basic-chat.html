@@ -5,18 +5,18 @@
     <title>Basic Chat — Networked-Aframe</title>
     <meta name="description" content="Basic Chat — Networked-Aframe" />
 
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
 
     <!--   NAF basic requirements   -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.5.0/socket.io.slim.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
     <script src="/easyrtc/easyrtc.js"></script>
     <script src="/dist/networked-aframe.js"></script>
 
     <!--    used for flying in this demo  -->
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.0/dist/aframe-extras.controls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.controls.min.js"></script>
 
     <!--   used for the pretty environment   -->
-    <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.7/dist/aframe-environment-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.5.0/dist/aframe-environment-component.min.js"></script>
 
     <!--   used to prevent players from spawning on top of each other so much  -->
     <script src="/js/spawn-in-circle.component.js"></script>
@@ -84,8 +84,14 @@
               // position and rotation are added by default if we don't include a template, but since
               // we also want to sync the color, we need to specify a custom template; if we didn't
               // include position and rotation in this custom template, they'd not be synced.
-              'position',
-              'rotation',
+              {
+                component: 'position',
+                requiresNetworkUpdate: NAF.utils.vectorRequiresUpdate(0.001)
+              },
+              {
+                component: 'rotation',
+                requiresNetworkUpdate: NAF.utils.vectorRequiresUpdate(0.5)
+              },
 
               // this is how we sync a particular property of a particular component for a particular
               // child element of template instances.
@@ -97,6 +103,23 @@
             ]
           });
         }
+
+        if (!NAF.schemas.hasTemplate('#rig-template')) {
+          NAF.schemas.add({
+            template: '#rig-template',
+            components: [
+              {
+                component: 'position',
+                requiresNetworkUpdate: NAF.utils.vectorRequiresUpdate(0.001)
+              },
+              {
+                component: 'rotation',
+                requiresNetworkUpdate: NAF.utils.vectorRequiresUpdate(0.5)
+              }
+            ]
+          });
+        }
+
         const components = NAF.schemas.getComponentsOriginal(template);
         return components;
       };
@@ -169,7 +192,6 @@
       debug: true;
       adapter: wseasyrtc;
     "
-      renderer="physicallyCorrectLights: true;"
     >
       <a-assets>
         <!-- Templates -->
@@ -198,7 +220,6 @@
       </a-assets>
 
       <a-entity environment="preset:starry;groundColor:#000000;"></a-entity>
-      <a-entity light="type:ambient;intensity:0.5"></a-entity>
 
       <!--   Here we declare only the local user's avatar, which we then broadcast to other users     -->
       <!--   The 'spawn-in-circle' component will set the position and rotation of #rig;
